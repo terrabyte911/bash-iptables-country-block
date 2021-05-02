@@ -1,0 +1,49 @@
+#!/bin/bash
+# tested on ubuntu 20.04 only.
+
+# ipset - set name
+SETNAME="blockall"
+
+# add country codes to ban here. China(cn), Russia(ru), Brazil(br) - see http://www.ipdeny.com for full list
+COUNTRIES="cn ru br"
+
+# iptables blocking rule. adjust to your needs.
+# block all ports except webserver
+BLOCKRULE="INPUT -p tcp -m tcp -m multiport -m set -j DROP ! --dports 80,443 --match-set $SETNAME src"
+
+# block all ports
+# BLOCKRULE="INPUT -p tcp -m tcp -m multiport -m set -j DROP --match-set $SETNAME src"
+
+# install ipset if needed else flush ipset blockall and delete exiting rule
+which ipset >/dev/null 2>&1
+if [ $? -eq 1 ] ; then
+  apt-get install ipset -y
+else
+  /usr/sbin/ipset flush $SETNAME
+  /usr/sbin/iptables -D $BLOCKRULE >/dev/null 2>&1
+  /usr/sbin/ipset destroy $SETNAME
+fi
+
+# create new ipset called $SETNAME
+/usr/sbin/ipset -N $SETNAME hash:net
+
+# download ip's into $SETNAME set
+for country in $COUNTRIES; do
+  echo ""
+  echo "Downloading Country Zone: $country.zone"
+  echo ""
+  wget -O - http://www.ipdeny.com/ipblocks/data/aggregated/$country-aggregated.zone 2>/dev/null | while read ip; do
+    /usr/sbin/ipset -A $SETNAME $ip;
+  done
+done
+
+# double check blockrule is not added to iptables
+/usr/sbin/iptables -C $BLOCKRULE >/dev/null 2>&1
+if [ $? -eq 1 ] ; then
+  /usr/sbin/iptables -A $BLOCKRULE # Append iptables rule
+  # /usr/sbin/iptables -I $BLOCKRULE # Prepend iptables rule
+fi
+
+# save iptables rules - adjust to your setup and uncomment below
+# /usr/sbin/iptables-save > /etc/iptables.up.rules
+
