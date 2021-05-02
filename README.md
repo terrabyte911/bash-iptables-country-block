@@ -9,7 +9,7 @@ A rule is added that blocks all ports except http/https.
 
 ## Installtion
 
-Download: `wget https://github.com/terrabyte911/ipblock/raw/master/ipblock.sh && chmod +x ipblock.sh`
+Download: `wget https://raw.githubusercontent.com/terrabyte911/bash-iptables-country-block/main/ipblock.sh && chmod +x ipblock.sh`
 
 Execute: `./ipblock.sh`
 
