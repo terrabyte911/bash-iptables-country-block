@@ -1,18 +1,16 @@
 #!/bin/bash
 # tested on ubuntu 20.04 only.
 
-# ipset - set name
-SETNAME="blockall"
-
 # add country codes to ban here. China(cn), Russia(ru), Brazil(br) - see http://www.ipdeny.com for full list
 COUNTRIES="cn ru br"
+
+# ipset - set name
+SETNAME="blockall"
 
 # iptables blocking rule. adjust to your needs.
 # block all ports except webserver
 BLOCKRULE="INPUT -p tcp -m tcp -m multiport -m set -j DROP ! --dports 80,443 --match-set $SETNAME src"
-
-# block all ports
-# BLOCKRULE="INPUT -p tcp -m tcp -m multiport -m set -j DROP --match-set $SETNAME src"
+# BLOCKRULE="INPUT -p tcp -m tcp -m multiport -m set -j DROP --match-set $SETNAME src" # block all ports
 
 # install ipset if needed else flush ipset blockall and delete exiting rule
 which ipset >/dev/null 2>&1
@@ -40,8 +38,8 @@ done
 # double check blockrule is not added to iptables
 /usr/sbin/iptables -C $BLOCKRULE >/dev/null 2>&1
 if [ $? -eq 1 ] ; then
-  /usr/sbin/iptables -A $BLOCKRULE # Append iptables rule
-  # /usr/sbin/iptables -I $BLOCKRULE # Prepend iptables rule
+ # /usr/sbin/iptables -A $BLOCKRULE # Append iptables rule
+  /usr/sbin/iptables -I $BLOCKRULE # Prepend iptables rule
 fi
 
 # save iptables rules - adjust to your setup and uncomment below
