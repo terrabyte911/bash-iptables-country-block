@@ -16,6 +16,10 @@ BLOCKRULE="INPUT -p tcp -m tcp -m multiport -m set -j DROP ! --dports 80,443 --m
 which ipset >/dev/null 2>&1
 if [ $? -eq 1 ] ; then
   apt-get install ipset -y
+  if [ $? -eq 1 ] ; then
+    echo 'error - ipset could not be installed'
+    exit 1
+  fi
 else
   /usr/sbin/ipset flush $SETNAME
   /usr/sbin/iptables -D $BLOCKRULE >/dev/null 2>&1
