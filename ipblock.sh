@@ -21,9 +21,9 @@ if [ $? -eq 1 ] ; then
     exit 1
   fi
 else
-  /usr/sbin/ipset flush $SETNAME
+  /usr/sbin/ipset flush $SETNAME >/dev/null 2>&1
   /usr/sbin/iptables -D $BLOCKRULE >/dev/null 2>&1
-  /usr/sbin/ipset destroy $SETNAME
+  /usr/sbin/ipset destroy $SETNAME >/dev/null 2>&1
 fi
 
 # create new ipset called $SETNAME
