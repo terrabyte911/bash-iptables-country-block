@@ -1,7 +1,7 @@
 #!/bin/bash
 # tested on ubuntu 20.04 only.
 
-# add country codes to ban here. China(cn), Russia(ru), Brazil(br) - see http://www.ipdeny.com for full list
+# add country codes to ban here. China(cn), Russia(ru), Brazil(br) - see https://www.ipdeny.com/ipblocks/ for full list
 COUNTRIES="cn ru br"
 
 # ipset - set name
